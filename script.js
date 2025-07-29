@@ -83,24 +83,55 @@
             currentSlide = (currentSlide + 1) % testimonialSlides.length;
             showSlide(currentSlide);
         }, 5000);
+
+
         
-        // Add to Cart functionality
-        const addToCartBtns = document.querySelectorAll('.add-to-cart');
-        const cartCount = document.querySelector('.cart-count');
-        let count = 0;
-        
-        addToCartBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                count++;
-                cartCount.textContent = count;
-                
-                // Animation
-                btn.innerHTML = '<i class="fas fa-check"></i>';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fas fa-plus"></i>';
-                }, 1000);
-            });
-        });
+const addToCartBtns = document.querySelectorAll('.add-to-cart');
+const cartCount = document.querySelector('.cart-count');
+const cartItemsList = document.getElementById('cart-items');
+const paymentForm = document.getElementById('payment-form');
+
+let count = 0;
+let cartItems = [];
+
+addToCartBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Get product info
+        const productCard = btn.closest('.menu-item'); // or your product class
+        const productName = productCard.querySelector('.product-name')?.textContent || 'Unnamed Product';
+        const productPrice = productCard.querySelector('.product-price')?.textContent || 'Price N/A';
+
+        // Add to cart array
+        cartItems.push({ name: productName, price: productPrice });
+
+        // Update cart count
+        count++;
+        cartCount.textContent = count;
+
+        // Update cart UI
+        renderCartItems();
+
+        // Animation feedback
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-plus"></i>';
+        }, 1000);
+    });
+});
+
+function renderCartItems() {
+    cartItemsList.innerHTML = '';
+
+    cartItems.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - ${item.price}`;
+        cartItemsList.appendChild(li);
+    });
+
+    // Optional: show cart section if hidden
+    document.getElementById('cart-section').style.display = 'block';
+}
+
         
         // Form Submission
         const bookingForm = document.getElementById('booking-form');
@@ -160,4 +191,66 @@
 
         // Trigger initial animations
         window.dispatchEvent(new Event('scroll'));
-        
+
+
+
+
+
+
+        // Checkout system
+const checkoutForm = document.getElementById('checkout-form');
+const paymentMethod = document.getElementById('payment-method');
+const paymentInstructions = document.getElementById('payment-instructions');
+
+// Show instructions based on payment method
+paymentMethod.addEventListener('change', () => {
+    const method = paymentMethod.value;
+
+    switch (method) {
+        case 'bkash':
+            paymentInstructions.style.display = 'block';
+            paymentInstructions.innerHTML = `
+                <strong>Bkash Payment:</strong> Send money to <b>017XXXXXXXX</b> and enter your transaction ID below.
+                <input type="text" placeholder="Bkash TXN ID" required>
+            `;
+            break;
+        case 'nagad':
+            paymentInstructions.style.display = 'block';
+            paymentInstructions.innerHTML = `
+                <strong>Nagad Payment:</strong> Send money to <b>018XXXXXXXX</b> and enter your transaction ID below.
+                <input type="text" placeholder="Nagad TXN ID" required>
+            `;
+            break;
+        case 'card':
+            paymentInstructions.style.display = 'block';
+            paymentInstructions.innerHTML = `
+                <strong>Card Payment:</strong> Enter your card details.
+                <input type="text" placeholder="Card Number" required>
+                <input type="text" placeholder="Expiry (MM/YY)" required>
+                <input type="text" placeholder="CVV" required>
+            `;
+            break;
+        case 'cod':
+            paymentInstructions.style.display = 'none';
+            paymentInstructions.innerHTML = '';
+            break;
+        default:
+            paymentInstructions.style.display = 'none';
+            paymentInstructions.innerHTML = '';
+    }
+});
+
+// Handle form submission
+checkoutForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Thank you for your order! We will process it shortly.');
+    checkoutForm.reset();
+    paymentInstructions.style.display = 'none';
+});
+
+
+
+checkoutForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    window.location.href = "success.html"; // Create this page
+});
